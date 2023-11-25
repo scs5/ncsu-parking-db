@@ -2,10 +2,11 @@ import sqlite3 as sql
 conn = sql.connect('parking.db')
 curs = conn.cursor()
 curs.execute("PRAGMA foreign_keys = ON;")
-import load_tables as insert
 
-# Requesting Citation Appeal
+
 def requestCitationAppeal(citationNumber: int):
+    """ Requesting citation appeal. """
+
     try:
         # Obtaining the current payment status of the citation with the provided citation number
         curs.execute("SELECT payment_status FROM tCitations WHERE citation_number = ?", (citationNumber))
@@ -20,8 +21,10 @@ def requestCitationAppeal(citationNumber: int):
     except sql.Error as e:
         print("Error requesting citation appeal")
 
-# Deny Appeal (changes status to “appeal denied”)
+
 def denyAppeal(citationNumber: int):
+    """ Deny citation appeal. """
+
     try:
         # Obtaining the current payment status of the citation with the provided citation number
         curs.execute("SELECT payment_status FROM tCitations WHERE citation_number = ?", (citationNumber))
@@ -37,8 +40,10 @@ def denyAppeal(citationNumber: int):
     except sql.Error as e:
         print("Error denying citation appeal")
 
-# Pay a Citation
+
 def payCitation(citationNumber: int):
+    """ Pay a citation. """
+
     try:
         # Obtaining the current payment status of the citation with the provided citation number
         curs.execute("SELECT payment_status FROM tCitations WHERE citation_number = ?", (citationNumber))
@@ -54,8 +59,9 @@ def payCitation(citationNumber: int):
     except sql.Error as e:
         print("Error paying citation")
 
-# Delete Citations for approving an appeal
+
 def delete_citation(citation_number=None):
+    """ Delete a citation. """
 
     try:
         # Obtaining the current payment status of the citation with the provided citation number
@@ -72,9 +78,10 @@ def delete_citation(citation_number=None):
     except sql.Error as e:
         print("Error approving citation")
 
-# Generating a citation for a vehicle that has made a violation
+
 def generate_citation(licensePlate, citationDate, citationTime, parkinglotName, category):
-    
+    """ Generate a citation. """
+
     try:
         # Assigning a value to the fee based on the category of the violation - based on project narrative
         fee  = 0
@@ -136,9 +143,10 @@ def generate_citation(licensePlate, citationDate, citationTime, parkinglotName, 
     curs.execute("COMMIT;")
     print("Citation Successfully Generated")
 
-# A function is used to detect if a vehicle has a violation in a given lot
-# Change name?
+
 def detect_citation(licensePlate, parkingLot):
+    """ Detect if a vehicle has a violation in a given lot. """
+
     # We need to look at the tables: tAreAssociatedWith and tAllowsDriverToParkIn
     try:
         current_date = input("Input current date (YYYY-MM-DD): ")
@@ -152,8 +160,10 @@ def detect_citation(licensePlate, parkingLot):
     # If they cannot park their, they are in violation
     return True
 
-# This helper function checks to see if the license plate is in the database
+
 def detect_licenseplate(licensePlate):
+    """ Check if license plate exists in the database. """
+
     curs.execute("SELECT * FROM tVehicles WHERE license_number = ?", (licensePlate,))
     res = curs.fetchall()
     # return true if it is and false if the plate is not found
@@ -161,9 +171,11 @@ def detect_licenseplate(licensePlate):
         return True
     return False
 
-# Finding the biggest citation number in tCitations
-# This helps us increment the citation number when we add a citation
+
 def find_max():
+    """ Find the largest citation number.
+        Helpful for incrementing citation numbers. """
+    
     curs.execute("SELECT MAX(citation_number) FROM tCitations;")
     res = curs.fetchone()
     # If there are no citations in the system we set it as 1 initially
@@ -173,9 +185,10 @@ def find_max():
     else:
         return res[0] + 1
 
-# Detects if the license plate exists and prints out all the citations for that license number
-# Rename
+
 def detect_license(license):
+    """ Print all citation numbers associated with a given license plate. """
+
     # Making sure license number is entered
     if not license:
         print("License needs to be entered")
@@ -191,8 +204,9 @@ def detect_license(license):
     else:
         return False
 
-# Detects if a parking lot exists
+
 def detect_parkinglot(parkinglot):
+    """ Check if parking lot exists in database. """
     # Making sure parking lot is entered
     if not parkinglot:
         print("Parking lot needs to be entered")
@@ -204,4 +218,3 @@ def detect_parkinglot(parkinglot):
     if res and res[0]:
         return True
     return False
-    

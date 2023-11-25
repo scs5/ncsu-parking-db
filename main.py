@@ -1,24 +1,15 @@
-# This is the main file of our system that accesses all other files to perform actions
-# This is what displays the terminal options to the user
 import Operations.InformationProcessing as InformationProcessing
 import Operations.MaintainingPermitsVehicles as MaintainingPermitsVehicles
 import Operations.GenerateMaintainCitations as GenerateMaintainCitations
 import Operations.Reports as Reports
-from create_tables import *
-from drop_tables import *
-from load_tables import *
-import os
+from Queries.CitationQueries import *
+from utils import *
 
-# def reload_data():
-#     drop_tables()
-#     create_tables()
-#     load_demo_data()
 
 # Information processing: 
 # Enter/update/delete basic information about drivers parking lots, zones, spaces, and permits. 
 # Assign zones to each parking lot and a type to a given space. 
 def information_processing(option: int):
-    # print("You selected Information Processing")
     if option == 1:
         InformationProcessing.enter_info_about_drivers()
     elif option == 2:
@@ -48,6 +39,7 @@ def information_processing(option: int):
     elif option == 14:
         InformationProcessing.delete_info_about_permits()
 
+
 # Maintaining permits and vehicle information for each driver: 
 # Assign permits to drivers according to their status. 
 # Enter/update permit information and vehicle ownership information, including remove or add vehicles.
@@ -70,6 +62,7 @@ def maintain_permits_and_vehicle_info(option: int):
     elif option == 8:
         MaintainingPermitsVehicles.add_vehicle_to_permit()
 
+
 # Generating and maintaining citations: 
 # Generate/maintain appropriate information for each citation. Before generating a citation, detect parking violations by checking if a car has a valid permit in the lot. 
 # Drivers have the ability to pay or appeal citations.
@@ -87,6 +80,7 @@ def generate_and_maintain_citations(option: int):
         GenerateMaintainCitations.reject_appeal()
     elif option == 6:
         GenerateMaintainCitations.appeal_citation()
+
 
 # Reports: Generate a report for citations. For each lot, generate a report for the total number of citations given in all zones in the lot for a given time range (e.g., monthly or annually). 
 # Return the list of zones for each lot as tuple pairs (lot, zone). 
@@ -113,20 +107,23 @@ def generate_reports(option: int):
     elif option == 8:
         Reports.count_pending_permits()
 
-# This is the main menu that first pops up upon starting the program
+
 def menu():
     # Main menu
     while True:
         print("\nMain Menu:")
+        print("(0) Load Demo Data")
         print("(1) Information Processing")
-        print("(2) Maintaining permits and vehicle information for each driver")
-        print("(3) Generating and maintaining citations")
+        print("(2) Maintaining Permit and Vehicle Information")
+        print("(3) Generating and Maintaining Citations")
         print("(4) Reports")
         print("(5) Quit")
 
-        choice = input("Select an option (1/2/3/4/5): ")
+        choice = input("Select an option: ")
 
-        if choice == '1':
+        if choice == '0':
+            load_demo_data()
+        elif choice == '1':
             while True:
                 print("\nInformation Processing:")
                 print("(1) Enter information about drivers") # Need univID_phonenumber
@@ -290,7 +287,6 @@ def menu():
 
 
 def main():
-    # reload_data()
     menu()
 
 

@@ -1,36 +1,30 @@
-# This page is meant to handle any queries that involve maintaining permit or vehicle information.
-# Tasks and Operations: Maintaining permits and vehicle information for each driver
 import sqlite3 as sql
-from load_tables import *
+from utils import *
 conn = sql.connect('parking.db')
 curs = conn.cursor()
 curs.execute("PRAGMA foreign_keys = ON;")
 
-# (1)
-# Approve permit
-# univID_phonenumber, permitID, start and end dates are entered
-# Happens after a permit has been requested
+
 def approvePermits():
+    """ Approve a permit. """
+
     permitID = input("Enter PermitID: ")
     if permitID == "":
         print("Permit ID is a required field for this operation.")
         return
-    sqlQ = "SELECT * FROM tPermits WHERE permitID == "+permitID+";"
-    curs.execute(sqlQ)
-    result = curs.fetchall()
-    print("RESULT:",result)
-    if len(result) == 0: # Making sure the permit we are about to approve has been requested already
+
+    # Making sure the permit we are about to approve has been requested already
+    if len(result) == 0:
         print('No permit with this ID was found.')
         return
     if result[0][4] != None:
         print('The permit with this ID has already been approved.')
         return
-    print(result)
+
     zoneID = input("Enter an existing zone ID: ")
     sql_status = "SELECT status from tDrivers WHERE univID_phonenumber IN (SELECT univID_phonenumber FROM tAreAssigned WHERE permitID =="+permitID+");"
     curs.execute(sql_status)
     status = curs.fetchall()[0][0]
-    print("STATUS:",status)
     if status == "S" and len(zoneID)==1:
         print("Student drivers cannot park in this zone ("+zoneID+")")
         return
@@ -40,7 +34,8 @@ def approvePermits():
     if status != "S" and len(zoneID)>1:
         print("Non-student drivers cannot park in this zone ("+zoneID+")")
         return
-    # check if that space type exists in any of the lots with the given zone ID
+    
+    # Check if that space type exists in any of the lots with the given zone ID
     check_space = "SELECT * FROM tSpaces WHERE space_type =='"+result[0][2]+"' AND zoneID=='"+zoneID+"';"
     curs.execute(check_space)
     res = curs.fetchall()
@@ -62,10 +57,7 @@ def approvePermits():
         print(startDate)
     expirationDate = input("Enter the expiration date of the permit being approved (YYYY-MM-DD): ")
     expirationTime = input("Enter the expiration time of the permit being approved (XX:XX:XX): ")
-    # if DATE(expirationDate)<DATE(startDate):
-    #     print("Start date must fall before end date.")
-    #     return
-    # Making sure the user inputs all required fields to perform this functionality
+
     if permitID == "" or zoneID == "" or startDate == "" or expirationDate == "" or expirationTime == "":
         print("You must fill in all fields to perform this action.")
         return
@@ -78,7 +70,6 @@ def approvePermits():
 
         update_query = "UPDATE tPermits SET start_date = ?, expiration_date = ?, expiration_time = ? WHERE permitID = ?"
         curs.execute(update_query, (startDate, expirationDate, expirationTime, permitID))
-        # return
 
         # Adding the new permit information into tAllowsDriverToParkIn
         curs.execute("SELECT lot_name FROM tZones WHERE zoneID =='"+zoneID+"';")
@@ -89,7 +80,6 @@ def approvePermits():
             raise Exception('Error: invalid data provided')
         for lotName in result:
             # Using our load function to add rows to the tAllowsDriverToParkIn table
-            # load('tAllowsDriverToParkIn',[permitID, zoneID, lotName])
             insert_sql = "INSERT INTO tAllowsDriverToParkIn VALUES (?,?,?);"
             print(insert_sql)
             print([permitID, zoneID, lotName])

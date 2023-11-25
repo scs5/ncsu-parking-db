@@ -1,2 +1,6 @@
 # Database
 *.db
+
+# Python
+*.pyc
+*.pyo
