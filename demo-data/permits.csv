@@ -1,0 +1,7 @@
+permitID,zoneID,univID_phonenumber,permit_type,space_type,start_date,expiration_date,expiration_time
+VSBF1C,V,7729119111,Commuter,Regular,2023-01-01,2024-01-01,06:00:00
+EJC1R,A,266399121,Residential,Electric,2010-01-01,2030-01-01,06:00:00
+EJH2C,A,366399121,Commuter,Regular,2023-01-01,2024-01-01,06:00:00
+EIG3C,A,466399121,Commuter,Regular,2023-01-01,2024-01-01,06:00:00
+SST1R,AS,122765234,Residential,Compact Car,2022-01-01,2023-09-30,06:00:00
+VCX1SE,V,9194789124,Special Event,Handicap,2023-01-01,2023-11-15,06:00:00
